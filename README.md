@@ -1,2 +1,2 @@
 # statatak
-Analysis to show statistical methods do not matter
+Analysis to show statistical methods do not matter.

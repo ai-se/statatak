@@ -52,3 +52,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Local files
+Models/Mystery1.py
+Models/Mystery2.py
+config.py

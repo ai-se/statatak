@@ -5,7 +5,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LinearRegression
 from lib import *
 from where2 import *
-import Technix.sk_old as sk
+#import Technix.sk_old as sk
+import Stats.sk as sk
 import Technix.CoCoMo as CoCoMo
 import Technix.sdivUtil as sdivUtil
 from Technix.smote import smote

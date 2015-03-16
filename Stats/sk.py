@@ -6,6 +6,7 @@
 from __future__ import division
 import sys, random, math
 sys.dont_write_bytecode = True
+from scipy.stats import chi2
 
 
 class o():
@@ -31,6 +32,45 @@ seed = random.seed
 exp = lambda n: math.e**n
 log = lambda n: math.log(n, math.e)
 g = lambda n: round(n, 2)
+
+def probit( p ):
+    """
+    Refer http://home.online.no/~pjacklam/notes/invnorm/impl/field/ltqnorm.txt
+    for details
+    """
+    if p <= 0 or p >= 1:
+        # The original perl code exits here, we'll throw an exception instead
+        raise ValueError( "Argument to probit %f must be in open interval (0,1)" % p )
+    # Coefficients in rational approximations.
+    a = (-3.969683028665376e+01,  2.209460984245205e+02, \
+         -2.759285104469687e+02,  1.383577518672690e+02, \
+         -3.066479806614716e+01,  2.506628277459239e+00)
+    b = (-5.447609879822406e+01,  1.615858368580409e+02, \
+         -1.556989798598866e+02,  6.680131188771972e+01, \
+         -1.328068155288572e+01 )
+    c = (-7.784894002430293e-03, -3.223964580411365e-01, \
+         -2.400758277161838e+00, -2.549732539343734e+00, \
+          4.374664141464968e+00,  2.938163982698783e+00)
+    d = ( 7.784695709041462e-03,  3.224671290700398e-01, \
+          2.445134137142996e+00,  3.754408661907416e+00)
+    # Define break-points.
+    plow  = 0.02425
+    phigh = 1 - plow
+    # Rational approximation for lower region:
+    if p < plow:
+       q  = math.sqrt(-2*math.log(p))
+       return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+               ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    # Rational approximation for upper region:
+    if phigh < p:
+       q  = math.sqrt(-2*math.log(1-p))
+       return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+                ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    # Rational approximation for central region:
+    q = p - 0.5
+    r = q*q
+    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
+           (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
 
 
 def median(lst, ordered=False):
@@ -92,6 +132,9 @@ def xtile(lst,lo=0,hi=100,width=40,
   #print(lst)
   return '('+''.join(out) +  ")," +  pretty(what)
 
+def lastIndex(lst, item):
+  return max(i for i, val in enumerate(lst) if val == item)
+
 """
 
 ### Standard Accumulator for Numbers
@@ -110,6 +153,7 @@ class Num:
     i._median=None
     i.name = name
     i.rank = 0
+    i.blom = None
     for x in inits: i.add(x)
   def s(i)       : return (i.m2/(i.n - 1))**0.5
   def add(i,x):
@@ -144,7 +188,9 @@ class Num:
       return i.all[1] - i.all[0]
     else:
       return i.all[int(n2)] - i.all[int(n1)]
-
+  def setBlom(i, mus):
+    rank = (mus.index(i.mu) + lastIndex(mus, i.mu))/2 + 1
+    i.blom = probit((rank - 0.375)/(len(mus)+0.25))
 """
 ### The A12 Effect Size Test 
 """
@@ -301,12 +347,63 @@ def scottknott(data,cohen=0.3,small=3, test=None,epsilon=0.01):
   the expected value of the mean before and 
   after the splits. 
   Reject splits with under 3 items"""
+  if test == "anova":
+    return rdiv_anova(data)
   all  = reduce(lambda x,y:x+y,data)
   same = lambda l,r: abs(l.median() - r.median()) <= all.s()*cohen
   if test: 
     same = lambda l, r:   not different(l.all,r.all,test) 
   big  = lambda    n: n > small    
   return rdiv(data,all,minMu,big,same,epsilon)
+
+def rdiv_anova(data): # a list of class Nums
+  errors = sorted([x.mu for x in data])
+  for one in data:
+    one.setBlom(errors)
+  def recurse(parts, rank=0):
+    cut, left, right = minChi(parts)
+    if cut: 
+        # if cut, rank "right" higher than "left"
+        rank = recurse(left,rank) + 1
+        rank = recurse(right,rank)
+    else: 
+      # if no cut, then all get same rank
+      for part in parts: 
+        part.rank = rank
+    return rank
+  recurse(sorted(data, key=lambda i: i.blom))
+  data = sorted(data, key=lambda i:i.rank)
+  for i,x in enumerate(data):
+    print(i)
+    print("Name", x.name)
+    print("Rank", x.rank)
+    print("Blom", x.blom)
+    print("Median", x.median())
+    print("Mean", x.mu)
+  return data
+
+def minChi(parts):
+  pi=math.pi
+  def meanBlom(tests):
+    return sum([test.blom for test in tests])/len(tests)
+  def SSE(tests):
+    return sum([test.blom**2 for test in tests])
+  k = parts[0].n
+  cut, left, right = None, None, None
+  bestError = 0
+  if len(parts) == 1:
+    return cut, left, right
+  totalError = meanBlom(parts)
+  for i in range(1,len(parts)):
+      lParts, rParts = parts[:i], parts[i:]
+      error = k*(len(lParts)*((meanBlom(lParts) - totalError)**2) + len(rParts)*((meanBlom(rParts) - totalError)**2))
+      if (error > bestError):
+        bestError, cut, left, right = error, i, lParts, rParts
+  lamda = (pi/(2*(pi-2)))*bestError/(SSE(parts)/k)
+  chi = chi2.ppf(0.95, k)
+  if lamda > chi:
+    return cut, left, right
+  return None, None, None
 
 def rdiv(data,  # a list of class Nums
          all,   # all the data combined into one num
@@ -422,7 +519,7 @@ def rdivDemo(data):
              data)
   ranks=[]
   maxMedian = -1
-  for x in scottknott(data,test="a12"):
+  for x in scottknott(data,test="anova"):
     maxMedian = max(maxMedian, x.median())
     ranks += [(x.rank,x.median(),x)]
   all=[]

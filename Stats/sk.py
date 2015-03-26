@@ -9,20 +9,23 @@ sys.dont_write_bytecode = True
 from scipy.stats import chi2
 
 
-class o():
-  def __init__(i, **fields):
-    i.override(fields)
-  def override(i, d): i.__dict__.update(d); return i
+class o:
+  def __init__(i,**d) : i.add(**d)
+  def has(i): return i.__dict__
+  def add(i,**d) : i.has().update(**d); return i
+  def __setitem__(i,k,v): i.has()[k] = v
+  def __getitem__(i,k)  : return i.has()[k]
+  def __repr__(i) :
+     f = lambda z: z.__class__.__name__ == 'function'
+     name = lambda z: z.__name__ if f(z) else z
+     public = lambda z: not "_" is z[0]
+     d    = i.has()
+     show = [':%s=%s' % (k,name(d[k])) 
+             for k in sorted(d.keys()) if public(k)]
+     return '{'+' '.join(show)+'}'
 
-  def __repr__(i):
-    d = i.__dict__
-    name = i.__class__.__name__
-    return name+'{'+' '.join([':%s %s' % (k, pretty(d[k]))
-                              for k in i.show()]) + '}'
-
-  def show(i):
-    return [k for k in sorted(i.__dict__.keys()) if "_" not in k]
-
+  
+  
 """
 Misc funcs
 """
@@ -32,6 +35,9 @@ seed = random.seed
 exp = lambda n: math.e**n
 log = lambda n: math.log(n, math.e)
 g = lambda n: round(n, 2)
+
+def pretty(lst) : 
+  return ', '.join([show % x for x in lst])
 
 def probit( p ):
     """
@@ -82,6 +88,15 @@ def median(lst, ordered=False):
   q = max(0, min(q, n))
   return (lst[p] + lst[q])/2
 
+def median_IQR(lst):
+  "Assumes lst is ordered."
+  n   = len(lst)
+  a   = int(0.25 * n)  
+  b1  = int(0.50 * n) ; b2 = max(b1 - 1,0)
+  c   = int(0.75 * n)
+  iqr = lst[c] - lst[a]
+  mid = lst[b1] if n % 2 else ((lst[b1] + lst[b2]) / 2) 
+  return mid, iqr
 
 def msecs(f):
   import time
@@ -189,7 +204,7 @@ class Num:
     else:
       return i.all[int(n2)] - i.all[int(n1)]
   def setBlom(i, mus):
-    rank = (mus.index(i.mu) + lastIndex(mus, i.mu))/2 + 1
+    rank = (mus.index(i.median()) + lastIndex(mus, i.median()))/2 + 1
     i.blom = probit((rank - 0.375)/(len(mus)+0.25))
 """
 ### The A12 Effect Size Test 
@@ -349,6 +364,8 @@ def scottknott(data,cohen=0.3,small=3, test=None,epsilon=0.01):
   Reject splits with under 3 items"""
   if test == "anova":
     return rdiv_anova(data)
+  elif test == "linear_cliffs":
+    return ranked(data)
   all  = reduce(lambda x,y:x+y,data)
   same = lambda l,r: abs(l.median() - r.median()) <= all.s()*cohen
   if test: 
@@ -356,10 +373,19 @@ def scottknott(data,cohen=0.3,small=3, test=None,epsilon=0.01):
   big  = lambda    n: n > small    
   return rdiv(data,all,minMu,big,same,epsilon)
 
-def rdiv_anova(data): # a list of class Nums
-  errors = sorted([x.mu for x in data])
-  for one in data:
-    one.setBlom(errors)
+def computeBlom(data, rank, n):
+  for treatment in data:
+    treatment.rank=rank
+    treatment.blom = probit((rank - 0.375)/(n+0.25))
+
+def rdiv_anova(data, epsilon=0.02): # a list of class Nums
+  data = sorted(data)
+  errors = [x.median() for x in data]
+  r_start = 0
+  for i,one in enumerate(data):
+    if(i+1==len(data) or round(data[i+1].median()-data[i].median(),2) > epsilon):
+      computeBlom(data[r_start:i+1], (r_start+i)/2 + 1, data[i].n)
+      r_start=i+1
   def recurse(parts, rank=0):
     cut, left, right = minChi(parts)
     if cut: 
@@ -372,14 +398,14 @@ def rdiv_anova(data): # a list of class Nums
         part.rank = rank
     return rank
   recurse(sorted(data, key=lambda i: i.blom))
-  data = sorted(data, key=lambda i:i.rank)
-  for i,x in enumerate(data):
+  data = sorted(data, key=lambda i: (i.median(),i.rank))
+  '''for i,x in enumerate(data):
     print(i)
     print("Name", x.name)
     print("Rank", x.rank)
     print("Blom", x.blom)
     print("Median", x.median())
-    print("Mean", x.mu)
+    print("Mean", x.mu)'''
   return data
 
 def minChi(parts):
@@ -399,8 +425,9 @@ def minChi(parts):
       error = k*(len(lParts)*((meanBlom(lParts) - totalError)**2) + len(rParts)*((meanBlom(rParts) - totalError)**2))
       if (error > bestError):
         bestError, cut, left, right = error, i, lParts, rParts
-  lamda = (pi/(2*(pi-2)))*bestError/(SSE(parts)/k)
-  chi = chi2.ppf(0.95, k)
+  v = k/(pi-2)
+  lamda = (pi/(2*(pi-2)))*bestError/(SSE(parts)/v)
+  chi = chi2.ppf(0.99, v)
   if lamda > chi:
     return cut, left, right
   return None, None, None
@@ -490,6 +517,11 @@ def runs(lst):
     one=two
   yield j - i + 1,two
 
+def ntiles(lst,tiles):
+  thing = lambda z: lst[ int(len(lst)*z)  ]
+  return [ thing(tile) for tile in tiles ]
+  
+  
 def cliffsDelta(lst1, lst2, dull=0.147):
   m, n = len(lst1), len(lst2)
   lst2 = sorted(lst2)
@@ -503,14 +535,77 @@ def cliffsDelta(lst1, lst2, dull=0.147):
     less += (n - j)*repeats
   d= (more - less) / (m*n + 0.000001) 
   return abs(d)  > dull      
-      
+
+"""
+Linear Cliffs Delta
+Take a dictionary of values representing
+different treatments. Return a list
+of the values, sorted on their median,
+ranked by Cliff's Delta.
+"""
+def ranked(rx,tiles=None,trivial=None):
+  "Returns a ranked list."
+  def kill_outliers(lst, median):
+    return [x for x in lst if x < 4*median]
+  tiles = tiles or [0.25, 0.5, 0.75 ]
+  tiny = trivial or 0.01
+  def prep(key):
+    nums  = sorted( rx[key] )
+    med,iqr = median_IQR(nums)
+    return o(rank  = 1,
+             name  = key,
+             _nums = nums,
+             median= med,
+             iqr   = iqr,
+             tiles = ntiles(nums, tiles))
+  lsts = sorted([prep(k) for k in rx],
+                key = lambda z: z.median)
+  rank, pool = 1, lsts[0]._nums
+  b4,_ = median_IQR(pool)
+  for x in lsts[1:]:
+    if abs(x.median - b4) > tiny \
+       and cliffsDelta(x._nums, pool):
+      rank += 1
+      pool  = x._nums
+      b4    = x.median
+    else:
+      pool  += x._nums
+      b4,_   = median_IQR(sorted(pool))
+    x.rank = rank
+    
+  data = []
+  for lst in lsts:
+    num = Num(lst.name, sorted(rx[lst.name]))
+    num.rank = lst.rank
+    data.append(num)
+  ranks, maxMedian =[],-1
+  for x in data:
+    maxMedian = max(maxMedian, x.median())
+    ranks += [(x.rank,x.median(),x)]
+  all=[]
+  for _,__,x in sorted(ranks): all += x.all
+  
+  all = kill_outliers(sorted(all),maxMedian)
+  lo, hi = all[0], all[-1]
+  line = "----------------------------------------------------"
+  last = None
+  print  ('%4s , %16s ,    %s   , %4s ' % \
+               ('rank', 'name', 'med', 'iqr'))+ "\n"+ line
+  for _,__,x in ranks:
+    q1,q2,q3 = x.quartiles()
+    #xtile(x.all,lo=lo,hi=hi,width=30,show="%5.2f")
+    print  ('%1s , %16s , %4s , %4s ' % \
+                 (x.rank, x.name, q2, q3 - q1))  + \
+              xtile(x.all,lo=lo,hi=hi,width=30,show="%5.2f")
+    last = x.rank 
+
 """
 ## Putting it All Together
 
 Driver for the demos:
 
 """
-def rdivDemo(data):
+def rdivDemo(data, test="a12"):
   def z(x):
     return int(100 * (x - lo) / (hi - lo + 0.00001))
   def kill_outliers(lst, median):
@@ -519,7 +614,7 @@ def rdivDemo(data):
              data)
   ranks=[]
   maxMedian = -1
-  for x in scottknott(data,test="anova"):
+  for x in scottknott(data, test=test):
     maxMedian = max(maxMedian, x.median())
     ranks += [(x.rank,x.median(),x)]
   all=[]

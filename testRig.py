@@ -14,6 +14,39 @@ from Technix.batman import smotify
 from Technix.TEAK import teak, leafTeak, teakImproved
 from Models import *
 MODEL = Mystery1.Mystery1
+
+"""
+MRE - Magnitude of Relative Error
+"""
+def MRE(predicted, actual): 
+  return abs(predicted-actual)/actual
+
+"""
+MRE - Magnitude of Error Relative
+"""
+def MER(predicted, actual):
+  return abs(predicted-actual)/predicted
+
+"""
+BRE - Balanced Relative Error
+"""
+def BRE(predicted, actual):
+  if predicted >= actual:
+    return abs(predicted-actual)/actual
+  else:
+    return abs(predicted-actual)/predicted
+
+"""
+IBRE - Inverted Balanced Relative Error
+"""
+def IBRE(predicted, actual):
+  if predicted < actual:
+    return abs(predicted-actual)/actual
+  else:
+    return abs(predicted-actual)/predicted
+  
+ERROR = IBRE
+
 """
 Creates a generator of 1 test record 
 and rest training records
@@ -48,7 +81,7 @@ def clusterk1(score, duplicatedModel, tree, test, desired_effort, leafFunc):
   test_leaf = leafFunc(duplicatedModel, test, tree)
   nearest_row = closest(duplicatedModel, test, test_leaf.val)
   test_effort = effort(duplicatedModel, nearest_row)
-  error = abs(desired_effort - test_effort)/desired_effort
+  error = ERROR(test_effort, desired_effort)
   #print("clusterk1", test_effort, desired_effort, error)
   score += error
   
@@ -58,10 +91,10 @@ def clustermean2(score, duplicatedModel, tree, test, desired_effort, leafFunc):
   if (len(nearestN)==1) :
     nearest_row = nearestN[0][1]
     test_effort = effort(duplicatedModel, nearest_row)
-    error = abs(desired_effort - test_effort)/desired_effort
+    error = ERROR(test_effort, desired_effort)
   else :
     test_effort = sum(map(lambda x:effort(duplicatedModel, x[1]), nearestN[:2]))/2
-    error = abs(desired_effort - test_effort)/desired_effort  
+    error = ERROR(test_effort, desired_effort)
   score += error
   
 def clusterWeightedMean2(score, duplicatedModel, tree, test, desired_effort, leafFunc):
@@ -70,13 +103,13 @@ def clusterWeightedMean2(score, duplicatedModel, tree, test, desired_effort, lea
   if (len(nearestN)==1) :
     nearest_row = nearestN[0][1]
     test_effort = effort(duplicatedModel, nearest_row)
-    error = abs(desired_effort - test_effort)/desired_effort
+    error = ERROR(test_effort, desired_effort)
   else :
     nearest2 = nearestN[:2]
     wt_0, wt_1 = nearest2[1][0]/(nearest2[0][0]+nearest2[1][0]+0.00001) , nearest2[0][0]/(nearest2[0][0]+nearest2[1][0]+0.00001)
     test_effort = effort(duplicatedModel, nearest2[0][1])*wt_0 + effort(duplicatedModel, nearest2[1][1])*wt_1
     #test_effort = sum(map(lambda x:effort(duplicatedModel, x[1]), nearestN[:2]))/2
-    error = abs(desired_effort - test_effort)/desired_effort  
+    error = ERROR(test_effort, desired_effort)
   score += error
   
 def clusterVasil(score, duplicatedModel, tree, test, desired_effort, leafFunc, k):
@@ -87,7 +120,7 @@ def clusterVasil(score, duplicatedModel, tree, test, desired_effort, leafFunc, k
   if (len(nearestN)==1) :
     nearest_row = nearestN[0][1]
     test_effort = effort(duplicatedModel, nearest_row)
-    error = abs(desired_effort - test_effort)/desired_effort
+    error = ERROR(test_effort, desired_effort)
   else :
     nearestk = nearestN[:k]
     test_effort, sum_wt = 0,0
@@ -95,7 +128,7 @@ def clusterVasil(score, duplicatedModel, tree, test, desired_effort, leafFunc, k
       test_effort += (1/(dist+0.000001))*effort(duplicatedModel,row)
       sum_wt += (1/(dist+0.000001))
     test_effort = test_effort / sum_wt
-    error = abs(desired_effort - test_effort)/desired_effort  
+    error = ERROR(test_effort, desired_effort)
   score += error
   
   
@@ -151,7 +184,7 @@ def linRegressCluster(score, duplicatedModel, tree, test, desired_effort, leafFu
     clf = LinearRegression()
     clf.fit(trainIPs, trainOPs)
     test_effort = clf.predict(getCosine(test_leaf))
-    error = abs(desired_effort - test_effort)/desired_effort
+    error = ERROR(test_effort, desired_effort)
     score += error
   
   
@@ -170,7 +203,7 @@ def linearRegression(score, model, train, test, desired_effort):
   clf = LinearRegression()
   clf.fit(trainIPs, trainOPs)
   test_effort = clf.predict(test.cells[:len(model.indep)])
-  error = abs(desired_effort - test_effort)/desired_effort
+  error = ERROR(test_effort, desired_effort)
   score += error
 
 """
@@ -182,7 +215,7 @@ def kNearestNeighbor(score, duplicatedModel, test, desired_effort, k=1, rows = N
     rows = duplicatedModel._rows
   nearestN = closestN(duplicatedModel, k, test, rows)
   test_effort = sorted(map(lambda x:effort(duplicatedModel, x[1]), nearestN))[k//2]
-  score += abs(desired_effort - test_effort)/desired_effort  
+  score += ERROR(test_effort, desired_effort)
 
 """
 Classification and Regression Trees from sk-learn
@@ -192,7 +225,7 @@ def CART(dataset, score, cartIP, test, desired_effort):
   decTree = DecisionTreeClassifier(criterion="entropy", random_state=1)
   decTree.fit(trainIp,trainOp)
   test_effort = decTree.predict(testIp)[0]
-  score += abs(desired_effort - test_effort)/desired_effort
+  score += ERROR(test_effort, desired_effort)
 
   
 def showWeights(model):
@@ -254,8 +287,8 @@ def testCoCoMo(dataset=MODEL(), a=2.94, b=0.91):
     desired_effort = effort(dataset, row)
     test_effort = CoCoMo.cocomo2(dataset, row.cells, a, b)
     test_effort_tuned = CoCoMo.cocomo2(dataset, row.cells, tuned_a, tuned_b)
-    scores["COCOMO2"] += abs(desired_effort - test_effort)/desired_effort
-    scores["COCONUT"] += abs(desired_effort - test_effort_tuned)/desired_effort
+    scores["COCOMO2"] += ERROR(test_effort, desired_effort)
+    scores["COCONUT"] += ERROR(test_effort_tuned, desired_effort)
   return scores
         
     
@@ -619,8 +652,85 @@ def testTeakified(model = MODEL):
   print("```")
   sk.rdivDemo(skData)
   print("```");print("")
+
+  
+"""
+A subset of all the experiments for
+the statatak paper
+"""
+def testStatAtak(model = MODEL):
+  split="median"
+  print('###'+model.__name__.upper())
+  dataset=model(split=split, weighFeature=False)
+  print('####'+str(len(dataset._rows)) + " data points,  " + str(len(dataset.indep)) + " attributes")
+  dataset_weighted = model(split=split, weighFeature=True)
+  launchWhere2(dataset, verbose=False)
+  skData = []
+  scores= dict(linear_reg=N(), CART=N(),
+               knn_1=N(), wt_knn_1=N(), 
+               PEEKING=N(), wt_PEEKING=N())
+  for score in scores.values():
+    score.go=True
+  for test, train in loo(dataset._rows):
+    desired_effort = effort(dataset, test)
+    tree = launchWhere2(dataset, rows=train, verbose=False)
+    n = scores["linear_reg"]
+    n.go and linearRegression(n, dataset, train, test, desired_effort)
+    n = scores["CART"]
+    n.go and CART(dataset, n, train, test, desired_effort)
+    n = scores["knn_1"]
+    n.go and kNearestNeighbor(n, dataset, test, desired_effort, 1, train)
+    n = scores["PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2)
+  
+  for test, train in loo(dataset._rows):
+    desired_effort = effort(dataset_weighted, test)
+    tree = launchWhere2(dataset_weighted, rows=train, verbose=False)
+    n = scores["wt_knn_1"]
+    n.go and kNearestNeighbor(n, dataset, test, desired_effort, 1, train)
+    n = scores["wt_PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2)
+  
+  for key,n in scores.items():
+    skData.append([key] + n.cache.all)
+  
+  if dataset._isCocomo:
+    for key,n in testCoCoMo(dataset).items():
+      skData.append([key] + n.cache.all) 
+  
+  print("####ANOVA + BLOM")
+  print("```")
+  sk.rdivDemo(skData,"anova")
+  print("```");print("")
+  
+  print("####Cliffs Delta")
+  print("```")
+  sk.rdivDemo(skData,"cliffs")
+  print("```");print("")
+  
+  print("####Cliffs Delta + Bootstrap")
+  print("```")
+  sk.rdivDemo(skData,"cliffs_bootstrap")
+  print("```");print("")
+  
+  print("####A12 + Bootstrap")
+  print("```")
+  sk.rdivDemo(skData,"a12")
+  print("```");print("")
+  
+  print("####Linear Cliffs Delta")
+  print("```")
+  rx = dict()
+  for row in skData:
+    rx[row[0]]=row[1:]
+  sk.ranked(rx)
+  print("```");print("")
   
   
+"""
+Run a test for all the 
+datasets we know.
+"""
 def runAllModels(test_name):
   models = [nasa93.nasa93, coc81.coc81, Mystery1.Mystery1, Mystery2.Mystery2,
             albrecht.albrecht, kemerer.kemerer, kitchenham.kitchenham,
@@ -638,5 +748,5 @@ def printAttributes(model):
   print("```\n")
 
 if __name__ == "__main__":
-  testEverything(Mystery1.Mystery1)
-  #runAllModels(printAttributes)
+  #testStatAtak(telecom.telecom)
+  runAllModels(testStatAtak)

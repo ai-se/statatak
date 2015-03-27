@@ -45,7 +45,7 @@ def IBRE(predicted, actual):
   else:
     return abs(predicted-actual)/predicted
   
-ERROR = IBRE
+ERROR = MRE
 
 """
 Creates a generator of 1 test record 
@@ -748,5 +748,5 @@ def printAttributes(model):
   print("```\n")
 
 if __name__ == "__main__":
-  #testStatAtak(telecom.telecom)
+  #testStatAtak(Mystery1.Mystery1)
   runAllModels(testStatAtak)

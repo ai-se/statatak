@@ -373,21 +373,23 @@ def scottknott(data,cohen=0.3,small=3, test=None,epsilon=0.01):
   big  = lambda    n: n > small    
   return rdiv(data,all,minMu,big,same,epsilon)
 
-def computeBlom(data, rank, n):
-  for treatment in data:
-    treatment.rank=rank
-    treatment.blom = probit((rank - 0.375)/(n+0.25))
 
-def rdiv_anova(data, epsilon=0.02): # a list of class Nums
+def rankInList(item, lst, delta=0.01):
+  start,end = 0,0
+  for i, val in enumerate(sorted(lst)):
+    if start!=0 and val >= item:
+      start = i+1
+    if val > (item + delta):
+      end = i
+      break
+  return (start+end)/2
+  
+  
+def rdiv_anova(data, epsilon=0.01): # a list of class Nums
   data = sorted(data)
-  errors = [x.median() for x in data]
-  r_start = 0
-  for i,one in enumerate(data):
-    if(i+1==len(data) or round(data[i+1].median()-data[i].median(),2) > epsilon):
-      computeBlom(data[r_start:i+1], (r_start+i)/2 + 1, data[i].n)
-      r_start=i+1
   def recurse(parts, rank=0):
-    cut, left, right = minChi(parts)
+    all = reduce(lambda x,y:x+y,parts)
+    cut, left, right = minChi(parts, all)
     if cut: 
         # if cut, rank "right" higher than "left"
         rank = recurse(left,rank) + 1
@@ -397,23 +399,22 @@ def rdiv_anova(data, epsilon=0.02): # a list of class Nums
       for part in parts: 
         part.rank = rank
     return rank
-  recurse(sorted(data, key=lambda i: i.blom))
+  recurse(data)
   data = sorted(data, key=lambda i: (i.median(),i.rank))
-  '''for i,x in enumerate(data):
-    print(i)
-    print("Name", x.name)
-    print("Rank", x.rank)
-    print("Blom", x.blom)
-    print("Median", x.median())
-    print("Mean", x.mu)'''
   return data
 
-def minChi(parts):
+def computeBlom(data, all):
+  rank = rankInList(data.median(), all.all)
+  data.blom = probit((rank - 0.375)/(all.n+0.25))
+
+def minChi(parts, all):
   pi=math.pi
   def meanBlom(tests):
     return sum([test.blom for test in tests])/len(tests)
   def SSE(tests):
     return sum([test.blom**2 for test in tests])
+  for part in parts:
+    computeBlom(part, all)
   k = parts[0].n
   cut, left, right = None, None, None
   bestError = 0

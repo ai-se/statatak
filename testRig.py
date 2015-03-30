@@ -765,8 +765,32 @@ def cripplers(model=MODEL):
       if key != hyp:
         skData.append([key] + n.cache.all)
     print("####LEAVING OUT",hyp)
+    print("####ANOVA + BLOM")
+    print("```")
+    sk.rdivDemo(skData,"anova")
+    print("```");print("")
+
+    print("####Cliffs Delta")
+    print("```")
+    sk.rdivDemo(skData,"cliffs")
+    print("```");print("")
+
+    print("####Cliffs Delta + Bootstrap")
+    print("```")
+    sk.rdivDemo(skData,"cliffs_bootstrap")
+    print("```");print("")
+
+    print("####A12 + Bootstrap")
     print("```")
     sk.rdivDemo(skData,"a12")
+    print("```");print("")
+
+    print("####Linear Cliffs Delta")
+    print("```")
+    rx = dict()
+    for row in skData:
+      rx[row[0]]=row[1:] 
+    sk.ranked(rx)
     print("```");print("")
   
 """
@@ -791,3 +815,4 @@ def printAttributes(model):
 if __name__ == "__main__":
   #testStatAtak(Mystery1.Mystery1)
   runAllModels(cripplers)
+  #cripplers(albrecht.albrecht)

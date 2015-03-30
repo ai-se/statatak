@@ -725,15 +725,56 @@ def testStatAtak(model = MODEL):
     rx[row[0]]=row[1:]
   sk.ranked(rx)
   print("```");print("")
+
   
+def cripplers(model=MODEL):
+  split="median"
+  print('###'+model.__name__.upper())
+  dataset=model(split=split, weighFeature=False)
+  print('####'+str(len(dataset._rows)) + " data points,  " + str(len(dataset.indep)) + " attributes")
+  dataset_weighted = model(split=split, weighFeature=True)
+  launchWhere2(dataset, verbose=False)
+  scores= dict(linear_reg=N(), CART=N(),
+               knn_1=N(), wt_knn_1=N(), 
+               PEEKING=N(), wt_PEEKING=N())
+  for score in scores.values():
+    score.go=True
+  for test, train in loo(dataset._rows):
+    desired_effort = effort(dataset, test)
+    tree = launchWhere2(dataset, rows=train, verbose=False)
+    n = scores["linear_reg"]
+    n.go and linearRegression(n, dataset, train, test, desired_effort)
+    n = scores["CART"]
+    n.go and CART(dataset, n, train, test, desired_effort)
+    n = scores["knn_1"]
+    n.go and kNearestNeighbor(n, dataset, test, desired_effort, 1, train)
+    n = scores["PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2)
+  
+  for test, train in loo(dataset._rows):
+    desired_effort = effort(dataset_weighted, test)
+    tree = launchWhere2(dataset_weighted, rows=train, verbose=False)
+    n = scores["wt_knn_1"]
+    n.go and kNearestNeighbor(n, dataset, test, desired_effort, 1, train)
+    n = scores["wt_PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2)
+  
+  for hyp in ["linear_reg","CART","knn_1","wt_knn_1","wt_PEEKING"]:
+    skData = []
+    for key,n in scores.items():
+      if key != hyp:
+        skData.append([key] + n.cache.all)
+    print("####LEAVING OUT",hyp)
+    print("```")
+    sk.rdivDemo(skData,"a12")
+    print("```");print("")
   
 """
 Run a test for all the 
 datasets we know.
 """
 def runAllModels(test_name):
-  models = [nasa93.nasa93, coc81.coc81, Mystery1.Mystery1, Mystery2.Mystery2,
-            albrecht.albrecht, kemerer.kemerer, kitchenham.kitchenham,
+  models = [albrecht.albrecht, kemerer.kemerer, kitchenham.kitchenham,
            maxwell.maxwell, miyazaki.miyazaki, telecom.telecom, usp05.usp05,
            china.china, cosmic.cosmic, isbsg10.isbsg10]
   for model in models:
@@ -749,4 +790,4 @@ def printAttributes(model):
 
 if __name__ == "__main__":
   #testStatAtak(Mystery1.Mystery1)
-  runAllModels(testStatAtak)
+  runAllModels(cripplers)

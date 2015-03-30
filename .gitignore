@@ -58,3 +58,4 @@ Models/Mystery1.py
 Models/Mystery2.py
 config.py
 .ropeproject/
+*.DS_STORE

@@ -1,0 +1,67 @@
+,,ORIGINAL,- CART,- Knn(1),- wt_knn(1),- Linear Reg,- wt_PEEKING
+albrecht,Anova + Blom,1,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+kemerer,Anova + Blom,1,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+kitchenham,Anova + Blom,2,2,3,3,2,3
+,Cliffs Delta,2,2,2,2,2,2
+,Cliffs+Bootstrp,2,2,2,2,2,2
+,A12+Bootstrp,2,2,2,2,2,2
+,Lin Cliffs Delta,2,2,2,2,2,2
+,,,,,,,
+maxwell,Anova + Blom,2,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+miyazaki,Anova + Blom,1,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+telecom,Anova + Blom,1,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+usp05,Anova + Blom,2,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+china,Anova + Blom,1,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+cosmic,Anova + Blom,2,2,2,2,1,2
+,Cliffs Delta,3,3,3,3,2,3
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,2,2,2,2,2,2
+,,,,,,,
+isbsg10,Anova + Blom,1,1,1,1,1,1
+,Cliffs Delta,1,1,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1,1,1
+,A12+Bootstrp,1,1,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1,1,1
+,,,,,,,
+,,,,,,,
+,Average Rank,1,1,1,1,2,2
+,Rank 1,40,42,42,42,43,42
+,Rank 2,9,7,6,6,7,6
+,Rank 3,1,1,2,2,0,2
+ ,Rank 4,0,0,0,1,0,2

@@ -1,0 +1,66 @@
+,,PEEKING,with SMOTE,with TEAK,with Feat Wt
+albrecht,Anova + Blom,1,1,1,1
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1
+,,,,,
+kemerer,Anova + Blom,1,1,1,1
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,2,1
+,,,,,
+kitchenham,Anova + Blom,1,1,2,2
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1
+,,,,,
+maxwell,Anova + Blom,1,1,1,1
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,2,2,2,1
+,Lin Cliffs Delta,1,1,1,1
+,,,,,
+miyazaki,Anova + Blom,1,1,1,1
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1
+,,,,,
+telecom,Anova + Blom,1,1,1,1
+,Cliffs Delta,1,1,1,2
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,2
+,,,,,
+usp05,Anova + Blom,1,2,2,2
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1
+,,,,,
+china,Anova + Blom,1,1,1,2
+,Cliffs Delta,1,1,1,2
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,2
+,,,,,
+cosmic,Anova + Blom,1,1,1,1
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1
+,,,,,
+isbsg10,Anova + Blom,1,1,1,1
+,Cliffs Delta,1,1,1,1
+,Cliffs+Bootstrp,1,1,1,1
+,A12+Bootstrp,1,1,1,1
+,Lin Cliffs Delta,1,1,1,1
+,,,,,
+,,,,,
+,Average Rank,1,1,1,1
+,Rank 1,49,48,46,43
+,Rank 2,1,2,4,7
+,Rank 3,0,0,0,0

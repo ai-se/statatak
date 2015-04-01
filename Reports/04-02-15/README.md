@@ -3,19 +3,12 @@
   - [Tile Charts](https://github.com/ai-se/statatak/blob/master/Reports/04-02-15/full_stats_99.md)
   - [Rank Tables](https://github.com/ai-se/statatak/blob/master/Reports/04-02-15/MRE_TABLE.csv) 
 - Effect of other hypotheses on PEEKING
-  - 
+  - [Tile Charts](https://github.com/ai-se/statatak/blob/master/Reports/04-02-15/Crippled.md)
+  - [Rank Tables](https://github.com/ai-se/statatak/blob/master/Reports/04-02-15/Crippled.csv) 
 - Variants of peeking to justify smote and teak
+  - [Tile Charts](https://github.com/ai-se/statatak/blob/master/Reports/04-02-15/Prune_And_Crude.md)
+  - [Rank Tables](https://github.com/ai-se/statatak/blob/master/Reports/04-02-15/PRUNE_AND_CRUDE.csv) 
 
-### Results
-- MRE 
-  - [Tile Charts](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/full_stats.md)
-  - [Rank Tables](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/MRE_TABLE.md)
-- MER 
-  - [Tile Charts](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/full_stats_MER.md)
-  - [Rank Tables](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/MER_TABLE.md)
-- BRE
-  - [Tile Charts](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/full_stats_BRE.md)
-  - [Rank Tables](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/BRE_TABLE.md)
-- IBRE
-  - [Tile Charts](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/full_stats_IBRE.md)
-  - [Rank Tables](https://github.com/ai-se/statatak/blob/master/Reports/03-26-15/IBRE_TABLE.md)
+### Doubts
+ - How can we justify FP vs LOC?
+ - Should we include model based methods? But model based beats analogy based?

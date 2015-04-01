@@ -45,7 +45,7 @@ def smote(dataset=MODEL(), rows = None, k=3, N = 4):
       dist, neighbor = choice(nearestN)
       clones.append(clone(one, neighbor))
     
-  seed()
+  #seed(1)
   if not rows:
     rows = dataset._rows
   for one, rest in loo(rows):

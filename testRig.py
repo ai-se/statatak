@@ -112,11 +112,14 @@ def clusterWeightedMean2(score, duplicatedModel, tree, test, desired_effort, lea
     error = ERROR(test_effort, desired_effort)
   score += error
   
-def clusterVasil(score, duplicatedModel, tree, test, desired_effort, leafFunc, k):
+def clusterVasil(score, duplicatedModel, tree, test, desired_effort, leafFunc, k, doSmote=True):
   test_leaf = leafFunc(duplicatedModel, test, tree)
   if k > len(test_leaf.val):
     k = len(test_leaf.val)
-  nearestN = closestN(duplicatedModel, k, test, test_leaf.val)
+  rows = test_leaf.val
+  if (len(rows)>1) and doSmote:
+    rows = smote(duplicatedModel, test_leaf.val, k=3, N=100)
+  nearestN = closestN(duplicatedModel, k, test, rows)
   if (len(nearestN)==1) :
     nearest_row = nearestN[0][1]
     test_effort = effort(duplicatedModel, nearest_row)
@@ -293,7 +296,6 @@ def testCoCoMo(dataset=MODEL(), a=2.94, b=0.91):
         
     
 def testDriver():
-  seed(0)
   skData = []
   split = "median"
   dataset=MODEL(split=split)
@@ -652,7 +654,7 @@ def testTeakified(model = MODEL):
   print("```")
   sk.rdivDemo(skData)
   print("```");print("")
-
+  
   
 """
 A subset of all the experiments for
@@ -792,7 +794,70 @@ def cripplers(model=MODEL):
       rx[row[0]]=row[1:] 
     sk.ranked(rx)
     print("```");print("")
+    
+
+def test_TEAK_AND_SMOTE(model = MODEL):
+  split="median"
+  print('###'+model.__name__.upper())
+  dataset=model(split=split, weighFeature=False)
+  print('####'+str(len(dataset._rows)) + " data points,  " + str(len(dataset.indep)) + " attributes")
+  dataset_weighted = model(split=split, weighFeature=True)
+  launchWhere2(dataset, verbose=False)
+  skData = []
+  scores= dict(PEEKING=N(), wt_PEEKING=N(),
+              t_PEEKING=N(), sm_PEEKING=N())
   
+  for score in scores.values():
+    score.go=True
+  
+  for test, train in loo(dataset._rows):
+    desired_effort = effort(dataset, test)
+    tree = launchWhere2(dataset, rows=train, verbose=False)
+    n = scores["PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2)
+    n = scores["sm_PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2, doSmote=True)
+    tree = teakImproved(dataset, rows=train, verbose=False)
+    n = scores["t_PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2)
+  
+  for test, train in loo(dataset._rows):
+    desired_effort = effort(dataset_weighted, test)
+    tree = launchWhere2(dataset_weighted, rows=train, verbose=False)
+    n = scores["wt_PEEKING"]
+    n.go and clusterVasil(n, dataset, tree, test, desired_effort,leaf,2)
+    
+  for key,n in scores.items():
+    skData.append([key] + n.cache.all)
+  
+  print("####ANOVA + BLOM")
+  print("```")
+  sk.rdivDemo(skData,"anova")
+  print("```");print("")
+  
+  print("####Cliffs Delta")
+  print("```")
+  sk.rdivDemo(skData,"cliffs")
+  print("```");print("")
+  
+  print("####Cliffs Delta + Bootstrap")
+  print("```")
+  sk.rdivDemo(skData,"cliffs_bootstrap")
+  print("```");print("")
+  
+  print("####A12 + Bootstrap")
+  print("```")
+  sk.rdivDemo(skData,"a12")
+  print("```");print("")
+  
+  print("####Linear Cliffs Delta")
+  print("```")
+  rx = dict()
+  for row in skData:
+    rx[row[0]]=row[1:]
+  sk.ranked(rx)
+  print("```");print("")
+    
 """
 Run a test for all the 
 datasets we know.
@@ -813,6 +878,7 @@ def printAttributes(model):
   print("```\n")
 
 if __name__ == "__main__":
-  #testStatAtak(Mystery1.Mystery1)
-  runAllModels(cripplers)
+  #testStatAtak(albrecht.albrecht)
+  runAllModels(test_TEAK_AND_SMOTE)
   #cripplers(albrecht.albrecht)
+  #test_TEAK_AND_SMOTE(kemerer.kemerer)

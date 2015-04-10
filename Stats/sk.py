@@ -114,11 +114,11 @@ def pairs(lst):
 
 
 def xtile(lst,lo=0,hi=100,width=40,
-       #chops=[0.1 ,0.3,0.5,0.7,0.9],
-       chops=[0.25,0.5,0.75],
-       #marks=[" ","-","-"," "],
-       marks=["-","-"],
-       bar="|",star="*",show=" %3.0f"):
+       chops=[0.1 ,0.3,0.5,0.7,0.9],
+       #chops=[0.25,0.5,0.75],
+       marks=[" ","-","-"," "],
+       #marks=["-","-"],
+       bar="|",star="*",show=" %3.0f", showQuartiles=True):
   """The function _xtile_ takes a list of (possibly)
   unsorted numbers and presents them as a horizontal
   xtile chart (in ascii format). The default is a 
@@ -145,6 +145,8 @@ def xtile(lst,lo=0,hi=100,width=40,
   out[int(width/2)]    = bar
   out[place(pos(0.5))] = star
   #print(lst)
+  if not showQuartiles:
+    return '('+''.join(out) +  "),"
   return '('+''.join(out) +  ")," +  pretty(what)
 
 def lastIndex(lst, item):
@@ -544,7 +546,7 @@ different treatments. Return a list
 of the values, sorted on their median,
 ranked by Cliff's Delta.
 """
-def ranked(rx,tiles=None,trivial=None):
+def ranked(rx,tiles=None,trivial=None, doPrint=True):
   "Returns a ranked list."
   def kill_outliers(lst, median):
     return [x for x in lst if x < 4*median]
@@ -583,6 +585,9 @@ def ranked(rx,tiles=None,trivial=None):
   for x in data:
     maxMedian = max(maxMedian, x.median())
     ranks += [(x.rank,x.median(),x)]
+  if not doPrint:
+    return ranks
+  
   all=[]
   for _,__,x in sorted(ranks): all += x.all
   
@@ -634,3 +639,58 @@ def rdivDemo(data, test="a12"):
                  (x.rank+1, x.name, q2, q3 - q1))  + \
               xtile(x.all,lo=lo,hi=hi,width=30,show="%5.2f")
     last = x.rank 
+
+    
+def rankDemo(data, tests=None):
+  
+  def updateRankObj(rankObj, ranks, test):
+    for rank,_,x in ranks:
+      rankObj[x.name][test] = rank
+    
+  def kill_outliers(lst, median):
+    return [x for x in lst if x < 6*median]
+  if not tests:
+    tests = ["anova", "cliffs", "cliffs_bs", "a12", "linear_cd"]
+  rankObj = {}
+  for row in data:
+    testObj = {}
+    for test in tests:
+      testObj[test]=0
+    rankObj[row[0]] = testObj
+  
+  data = map(lambda lst:Num(lst[0],lst[1:]),
+             data)
+  maxMedian = -1
+  for test in tests:
+    ranks = []
+    if test == "linear_cd":
+      rx = dict()
+      for n in data:
+        rx[n.name] = n.all
+      ranks = ranked(rx, doPrint=False)
+    else :
+      for x in scottknott(data, test=test):
+        maxMedian = max(x.median(), maxMedian)
+        ranks += [(x.rank+1, x.median(), x)]
+    updateRankObj(rankObj, ranks, test)
+  
+  all=[]
+  for _,__,x in sorted(ranks): all += x.all
+  all = kill_outliers(sorted(all),maxMedian)
+  #all = sorted(all)
+  lo, hi = all[0], all[-1]
+  line = "-"*100
+  last = None
+  testsF = "".join(["%10s, "]*len(sorted(tests)))
+  print "%15s, "%"Method" + testsF%tuple(tests) + ", %5s %5s"%("med","iqr") + "\n" + line
+  for _,__,x in sorted(ranks, key= lambda z:(z[0],z[2].quartiles()[1])):
+    q1,q2,q3 = x.quartiles()
+    keys = sorted(rankObj[x.name].keys())
+    vals = [rankObj[x.name][key] for key in keys]
+    print "%15s, " % x.name + testsF % tuple(vals) + ", %5s %5s"%(q2, q3-q1) + ", " + xtile(x.all,lo=lo,hi=hi,width=30,show="%5.2f", showQuartiles=False)
+  
+  
+  
+  
+  
+  

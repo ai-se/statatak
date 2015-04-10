@@ -700,32 +700,8 @@ def testStatAtak(model = MODEL):
     for key,n in testCoCoMo(dataset).items():
       skData.append([key] + n.cache.all) 
   
-  print("####ANOVA + BLOM")
   print("```")
-  sk.rdivDemo(skData,"anova")
-  print("```");print("")
-  
-  print("####Cliffs Delta")
-  print("```")
-  sk.rdivDemo(skData,"cliffs")
-  print("```");print("")
-  
-  print("####Cliffs Delta + Bootstrap")
-  print("```")
-  sk.rdivDemo(skData,"cliffs_bootstrap")
-  print("```");print("")
-  
-  print("####A12 + Bootstrap")
-  print("```")
-  sk.rdivDemo(skData,"a12")
-  print("```");print("")
-  
-  print("####Linear Cliffs Delta")
-  print("```")
-  rx = dict()
-  for row in skData:
-    rx[row[0]]=row[1:]
-  sk.ranked(rx)
+  sk.rankDemo(skData)
   print("```");print("")
 
   
@@ -829,33 +805,8 @@ def test_TEAK_AND_SMOTE(model = MODEL):
     
   for key,n in scores.items():
     skData.append([key] + n.cache.all)
-  
-  print("####ANOVA + BLOM")
   print("```")
-  sk.rdivDemo(skData,"anova")
-  print("```");print("")
-  
-  print("####Cliffs Delta")
-  print("```")
-  sk.rdivDemo(skData,"cliffs")
-  print("```");print("")
-  
-  print("####Cliffs Delta + Bootstrap")
-  print("```")
-  sk.rdivDemo(skData,"cliffs_bootstrap")
-  print("```");print("")
-  
-  print("####A12 + Bootstrap")
-  print("```")
-  sk.rdivDemo(skData,"a12")
-  print("```");print("")
-  
-  print("####Linear Cliffs Delta")
-  print("```")
-  rx = dict()
-  for row in skData:
-    rx[row[0]]=row[1:]
-  sk.ranked(rx)
+  sk.rankDemo(skData)
   print("```");print("")
     
 """
@@ -881,4 +832,4 @@ if __name__ == "__main__":
   #testStatAtak(albrecht.albrecht)
   runAllModels(test_TEAK_AND_SMOTE)
   #cripplers(albrecht.albrecht)
-  #test_TEAK_AND_SMOTE(kemerer.kemerer)
+  #test_TEAK_AND_SMOTE(Mystery1.Mystery1)

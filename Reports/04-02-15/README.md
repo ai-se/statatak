@@ -12,3 +12,7 @@
 ### Doubts
  - How can we justify FP vs LOC?
  - Should we include model based methods? But model based beats analogy based?
+ 
+### References So Far
+ - https://github.com/ai-se/statatak/issues/3
+ - Could not find any reference for feature weighting.

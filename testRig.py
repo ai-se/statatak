@@ -700,10 +700,39 @@ def testStatAtak(model = MODEL):
     for key,n in testCoCoMo(dataset).items():
       skData.append([key] + n.cache.all) 
   
+  """print("####ANOVA + BLOM")
+  print("```")
+  sk.rdivDemo(skData,"anova")
+  print("```");print("")
+  
+  print("####Cliffs Delta")
+  print("```")
+  sk.rdivDemo(skData,"cliffs")
+  print("```");print("")
+  
+  print("####Cliffs Delta + Bootstrap")
+  print("```")
+  sk.rdivDemo(skData,"cliffs_bs")
+  print("```");print("")
+  
+  print("####A12 + Bootstrap")
+  print("```")
+  sk.rdivDemo(skData,"a12")
+  print("```");print("")
+  
+  print("####Linear Cliffs Delta")
+  print("```")
+  rx = dict()
+  for row in skData:
+    rx[row[0]]=row[1:]
+  sk.ranked(rx)
+  print("```");print("")"""
+  
   print("```")
   sk.rankDemo(skData)
   print("```");print("")
-
+  
+  
   
 def cripplers(model=MODEL):
   split="median"
@@ -755,7 +784,7 @@ def cripplers(model=MODEL):
 
     print("####Cliffs Delta + Bootstrap")
     print("```")
-    sk.rdivDemo(skData,"cliffs_bootstrap")
+    sk.rdivDemo(skData,"cliffs_bs")
     print("```");print("")
 
     print("####A12 + Bootstrap")
@@ -829,7 +858,7 @@ def printAttributes(model):
   print("```\n")
 
 if __name__ == "__main__":
-  #testStatAtak(albrecht.albrecht)
+  #testStatAtak(Mystery1.Mystery1)
   runAllModels(test_TEAK_AND_SMOTE)
   #cripplers(albrecht.albrecht)
-  #test_TEAK_AND_SMOTE(Mystery1.Mystery1)
+  #test_TEAK_AND_SMOTE(nasa93.nasa93)

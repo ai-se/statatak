@@ -1,7 +1,7 @@
 ###ALBRECHT
 ####24 data points,  7 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
         PEEKING,          1,          1,          1,          1,          1, ,    25   133, (  -*-------    |              ),
      sm_PEEKING,          1,          1,          1,          1,          1, ,    34   102, (  ---*-----    |              ),
@@ -12,7 +12,7 @@
 ###KEMERER
 ####15 data points,  6 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
      wt_PEEKING,          1,          1,          1,          1,          1, ,    48    51, ( -----*        |              ),
         PEEKING,          1,          1,          1,          1,          1, ,    52    25, (     -*----    |              ),
@@ -23,7 +23,7 @@
 ###KITCHENHAM
 ####145 data points,  6 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
         PEEKING,          1,          1,          1,          1,          1, ,    38    46, (  -*-          |              ),
      sm_PEEKING,          1,          1,          1,          1,          1, ,    40    56, (  -*-          |              ),
@@ -34,18 +34,18 @@
 ###MAXWELL
 ####62 data points,  26 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
      sm_PEEKING,          1,          1,          1,          1,          1, ,    52    62, (  -*-          |              ),
       t_PEEKING,          1,          1,          1,          1,          1, ,    54    70, ( --*-          |              ),
         PEEKING,          1,          1,          1,          1,          1, ,    59    51, (  -*-          |              ),
-     wt_PEEKING,          2,          2,          2,          1,          2, ,    75   185, (   --*-----    |              ),
+     wt_PEEKING,          2,          2,          2,          2,          2, ,    75   185, (   --*-----    |              ),
 ```
 
 ###MIYAZAKI
 ####48 data points,  7 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
         PEEKING,          1,          1,          1,          1,          1, ,    36    81, ( --*---        |              ),
      sm_PEEKING,          1,          1,          1,          1,          1, ,    38    75, ( --*--         |              ),
@@ -56,7 +56,7 @@
 ###TELECOM
 ####18 data points,  2 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
      sm_PEEKING,          1,          1,          1,          1,          1, ,    23    50, (   --*-----    |              ),
      wt_PEEKING,          1,          1,          1,          1,          1, ,    25    44, (   --*-----    |              ),
@@ -67,18 +67,18 @@
 ###USP05
 ####203 data points,  7 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
+     wt_PEEKING,          1,          1,          1,          1,          1, ,    51   103, ( ---*--        |              ),
      sm_PEEKING,          1,          1,          1,          1,          1, ,    53    82, ( ---*--        |              ),
-     wt_PEEKING,          1,          1,          1,          1,          1, ,    54   102, (  --*--        |              ),
         PEEKING,          1,          1,          1,          1,          1, ,    56    90, ( ---*--        |              ),
-      t_PEEKING,          1,          1,          1,          1,          1, ,    56   126, (  ---*--       |              ),
+      t_PEEKING,          1,          1,          1,          1,          1, ,    56   123, (  ---*--       |              ),
 ```
 
 ###CHINA
 ####499 data points,  16 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
      sm_PEEKING,          1,          1,          1,          1,          1, ,    36    56, (  --*-         |              ),
         PEEKING,          1,          1,          1,          1,          1, ,    36    43, (  --*-         |              ),
@@ -89,7 +89,7 @@
 ###COSMIC
 ####42 data points,  10 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
       t_PEEKING,          1,          1,          1,          1,          1, ,    82   180, (   -*---       |              ),
      wt_PEEKING,          1,          1,          1,          1,          1, ,    83   142, (   -*----      |              ),
@@ -100,11 +100,11 @@
 ###ISBSG10
 ####37 data points,  11 attributes
 ```
-         Method,      anova,     cliffs,  cliffs_bs,        a12,  linear_cd, ,   med   iqr
+         Method,        a12,      anova,     cliffs,  cliffs_bs,  linear_cd, ,   med   iqr
 ----------------------------------------------------------------------------------------------------
       t_PEEKING,          1,          1,          1,          1,          1, ,    54    54, (  -*           |              ),
-     sm_PEEKING,          2,          1,          2,          1,          2, ,    62   169, (  -*------     |              ),
-        PEEKING,          2,          1,          2,          1,          2, ,    65    92, (  --*--        |              ),
-     wt_PEEKING,          3,          2,          3,          1,          3, ,    91   275, (    -*---------|--            ),
+     sm_PEEKING,          2,          1,          2,          2,          2, ,    62   169, (  -*------     |              ),
+        PEEKING,          2,          1,          2,          2,          2, ,    65    92, (  --*--        |              ),
+     wt_PEEKING,          3,          2,          3,          3,          3, ,    91   275, (    -*---------|--            ),
 ```
 

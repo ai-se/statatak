@@ -7,7 +7,7 @@ from __future__ import division
 import sys, random, math
 sys.dont_write_bytecode = True
 from scipy.stats import chi2
-
+from copy import deepcopy
 
 class o:
   def __init__(i,**d) : i.add(**d)
@@ -329,7 +329,7 @@ def different(l1,l2, mode="a12"):
     return a12(l2,l1) and bootstrap(l1,l2)
   elif mode == "cliffs":
     return cliffsDelta(l1,l2)
-  elif mode == "cliffs_bootstrap":
+  elif mode == "cliffs_bs":
     return cliffsDelta(l1,l2) and bootstrap(l1,l2)
 
 """
@@ -663,13 +663,14 @@ def rankDemo(data, tests=None):
   maxMedian = -1
   for test in tests:
     ranks = []
+    datacp = deepcopy(data)
     if test == "linear_cd":
       rx = dict()
-      for n in data:
+      for n in datacp:
         rx[n.name] = n.all
       ranks = ranked(rx, doPrint=False)
     else :
-      for x in scottknott(data, test=test):
+      for x in scottknott(datacp, test=test):
         maxMedian = max(x.median(), maxMedian)
         ranks += [(x.rank+1, x.median(), x)]
     updateRankObj(rankObj, ranks, test)
@@ -682,7 +683,7 @@ def rankDemo(data, tests=None):
   line = "-"*100
   last = None
   testsF = "".join(["%10s, "]*len(sorted(tests)))
-  print "%15s, "%"Method" + testsF%tuple(tests) + ", %5s %5s"%("med","iqr") + "\n" + line
+  print "%15s, "%"Method" + testsF%tuple(sorted(tests)) + ", %5s %5s"%("med","iqr") + "\n" + line
   for _,__,x in sorted(ranks, key= lambda z:(z[0],z[2].quartiles()[1])):
     q1,q2,q3 = x.quartiles()
     keys = sorted(rankObj[x.name].keys())
